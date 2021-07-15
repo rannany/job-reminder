@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # my app
     'users',
+    'tasks',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'users/templates')
+            os.path.join(BASE_DIR, 'users/templates'),
+            os.path.join(BASE_DIR, 'tasks/templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {

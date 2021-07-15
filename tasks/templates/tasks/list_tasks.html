@@ -1,0 +1,20 @@
+{% extends 'tasks/layouts/base.html' %}
+
+{% block content%}
+    <h2>Minhas tasks</h2>
+    <a href="{% url 'tasks:create_task' %}">Adicionar task</a>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <span>{{task.title}}</span> -
+                {% if task.is_done %}
+                    <span>Completa</span>
+                {% else %}
+                    <span>Incompleta</span>
+                {% endif%}
+                <a href="{% url 'tasks:edit_task' task.pk %}">editar</a>
+                <a href="{% url 'tasks:delete_task' task.pk %}">deletar</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

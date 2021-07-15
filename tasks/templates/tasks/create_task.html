@@ -1,0 +1,11 @@
+{% extends 'tasks/layouts/base.html' %}
+
+{% block content%}
+    <h2>Nova task</h2>
+    <a href="{% url 'tasks:list_task' %}">lista de tarefas</a>
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="salvar">
+    </form>
+{% endblock content %}

@@ -1,0 +1,11 @@
+{% extends 'tasks/layouts/base.html' %}
+
+{% block content%}
+    <h2>Tem ceteza que deseja deletar a task {{task.title}}?</h2>
+
+    <a href="{% url 'tasks:list_task' %}">Cancelar</a>
+    <form method="post" action="">
+        {% csrf_token %}
+        <input type="submit" value="Confirmar">
+    </form>
+{% endblock content %}
