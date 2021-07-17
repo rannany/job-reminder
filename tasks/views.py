@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic.list import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from tasks.models import Task
 from django.urls import reverse
 from tasks.forms import TaskForm
@@ -7,13 +10,17 @@ from tasks.forms import TaskForm
 # Create your views here.
 
 
-def list_task(request):
-    context = {
-        'tasks': Task.objects.all()
-    }
-    return render(request, 'tasks/list_tasks.html', context)
+class TaskList(LoginRequiredMixin, ListView):
+    model = Task
+    context_object_name = 'tasks'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks'] = context['tasks'].filter(user=self.request.user)
+        return context
 
 
+@login_required()
 def create_task(request):
     if request.method == 'GET':
         context = {
@@ -27,6 +34,7 @@ def create_task(request):
             return redirect(reverse('tasks:list_task'))
 
 
+@login_required()
 def edit_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     form = TaskForm(request.POST or None, instance=task)
@@ -36,6 +44,7 @@ def edit_task(request, pk):
     return render(request, 'tasks/edit_task.html', {'form': form})
 
 
+@login_required()
 def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
