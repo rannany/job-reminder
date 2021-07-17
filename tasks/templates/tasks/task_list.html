@@ -1,8 +1,15 @@
 {% extends 'tasks/layouts/base.html' %}
 
 {% block content%}
-    <h2>Minhas tasks</h2>
+    <h2>Minhas tasks  {{count}}</h2>
+    <p></p>
     <a href="{% url 'tasks:create_task' %}">Adicionar task</a>
+    <form method="get" action="{% url 'tasks:list_task'%}">
+        <label>
+            <input type="text" name="search-query" value="{{search_input}}">
+        </label>
+        <button type="submit">pesquisar</button>
+    </form>
     <ul>
         {% for task in tasks %}
             <li>
