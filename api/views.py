@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import viewsets, status, authentication, permissions
+from rest_framework import viewsets, status, authentication, permissions, mixins
 from django.shortcuts import get_object_or_404
 
 from tasks.models import Task
@@ -18,16 +18,33 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_superuser
 
 
-class TaskViewSet(viewsets.ModelViewSet):
-    serializer_class = TaskSerializer
-    authentication_classes = [authentication.TokenAuthentication]
+class TaskViewSet(mixins.ListModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.CreateModelMixin,
+                  viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwner]
+    authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = TaskSerializer
+    queryset = Task.objects.all()
 
-    def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+    def list(self, request, *args, **kwargs):
+        tasks = self.get_queryset()
+        page_tasks = self.paginate_queryset(tasks)
+        if page_tasks is not None:
+            return self.get_paginated_response(self.get_serializer(page_tasks, many=True).data)
+        return Response(self.get_serializer(tasks, many=True).data)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+# class TaskViewSet(viewsets.ModelViewSet):
+#     serializer_class = TaskSerializer
+#     authentication_classes = [authentication.TokenAuthentication]
+#     permission_classes = [permissions.IsAuthenticated, IsOwner]
+#
+#     def get_queryset(self):
+#         return Task.objects.filter(user=self.request.user)
+#
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user)
+
 
 # class TaskViewSet(viewsets.ViewSet):
 #     authentication_classes = [authentication.TokenAuthentication]
